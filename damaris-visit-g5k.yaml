@@ -1,0 +1,66 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: <MY RECIPE DESCRIPTION>
+#
+#==============================================================================
+
+---
+extend: grid5000/debian7.yaml
+
+global:
+    # You can see the base template `grid5000/debian7.yaml.yaml` to know the
+    # variables that you can override
+    my_g5k_username: lrahmani
+    g5k_site: reims
+    kenv: "wheezy-x64-nfs"
+    prefix: $HOME/local/$${kameleon_recipe_name}
+    reservation_walltime: 8
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+  # Add the current user as sudoer
+  # Used only for nfs images
+  #- exec_in: adduser $$my_g5k_username sudo 
+  # MPICH
+  # Download mpich$$version, compile it and install it in $$install_prefix
+  # Check the file ./steps/setup/install_mpich.yaml
+  #- install_mpich:
+  #  - version: "2-1.5rc3" 
+  #  - install_prefix: $$prefix
+  
+  # VisIt
+  # Download VisIt from $$src_url, compile it and 
+  # install it at $$install_prefix
+  # All dependies will be installed
+  # Check the file ./steps/setup/install_visit.yaml
+  - install_cmake:
+    - install_prefix: $$prefix
+    
+  - install_visit:
+    - version: "2.8.0"
+    - install_prefix: $$prefix
+
+  # Damaris
+  # Download Damaris src form git repo $$repo_url, 
+  # compile it and install it at $$install_prefix
+  # All dependencies wil be installed
+  # Check the file ./steps/setup/install_damaris.yaml
+  - install_damaris:
+    - git_repo: "https://gforge.inria.fr/git/damaris/damaris.git"
+    - commit_id: HEAD
+    - install_prefix: $$prefix
+  
+  # HDF5
+  # Check the file ./steps/setup/install_hdf5.yaml
+  - install_hdf5:
+    - src_url: http://www.hdfgroup.org/ftp/HDF5/current/src/hdf5-1.8.13.tar.gz
+    - install_prefix: $$prefix
+
+export:
+  - "@base"
+

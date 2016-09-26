@@ -1,0 +1,22 @@
+- mpich_version: "2-1.5rc3"
+- config: "--enable-shared --enable-romio --enable-fc"
+- fortran_install:
+  - exec_in: apt-get update
+  - exec_in: apt-get -y install gfortran
+- mpich_get: 
+  - exec_local: cd /tmp/
+  - exec_local: wget -q  http://www.mpich.org/static/downloads/1.5rc3/mpich$$mpich_version.tar.gz
+  - local2in:
+    - /tmp/mpich$$mpich_version.tar.gz
+    - /tmp/mpich$$mpich_version.tar.gz
+  - exec_local: rm /tmp/mpich$$mpich_version.tar.gz 
+
+- mpich_install: 
+   - exec_in: su $$my_g5k_username
+   - exec_in: cd /tmp/
+   - exec_in: tar -xzf mpich$$mpich_version.tar.gz
+   - exec_in: cd /tmp/mpich$$mpich_version
+   - exec_in: ./configure --prefix=$$install_prefix $$config 2>&1 | tee c.txt
+   - exec_in: make 2>&1 | tee m.txt
+   - exec_in: make install 2>&1 | tee mi.txt
+   - exec_in: exit

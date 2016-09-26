@@ -1,0 +1,38 @@
+- version: "2.8.0"
+- build_version: $(echo $${version} | tr . _)
+- dep_packages: >
+   dialog freeglut3 freeglut3-dev mesa-utils libxext-dev libxrender-dev libxt-dev libxi-dev x11-utils xutils-dev  zlib1g-dev tmux python-libxml2
+- dep_urls: >
+   http://portal.nersc.gov/svn/visit/tags/2.8.0/third_party/MesaLib-7.10.2.tar.gz
+   http://portal.nersc.gov/svn/visit/tags/2.8.0/third_party/Python-2.7.6.tgz
+   http://www.vtk.org/files/release/6.1/VTK-6.1.0.tar.gz
+   http://portal.nersc.gov/svn/visit/trunk/releases/2.8.0/visit2.8.0.tar.gz
+   http://portal.nersc.gov/svn/visit/tags/2.8.0/third_party/Imaging-1.1.6.tar.gz
+   http://portal.nersc.gov/svn/visit/tags/2.8.0/third_party/pyparsing-1.5.2.tar.gz
+   http://portal.nersc.gov/svn/visit/tags/2.8.0/third_party/IceT-1-0-0.tar.gz
+- visit_get:
+  - exec_local: cd /tmp/
+  - exec_local: wget -q  http://portal.nersc.gov/svn/visit/trunk/releases/$${version}/visit$${version}.tar.gz
+  - exec_local: mkdir -p _visit_dep && cd _visit_dep
+  - exec_local: wget -q $$dep_urls http://portal.nersc.gov/svn/visit/trunk/releases/$${version}/build_visit$${build_version}
+  - exec_local: rsync -e  "ssh -F $$ssh_config_file" -az /tmp/_visit_dep/* $$kameleon_recipe_name:/tmp/_visit_dep/
+#  - exec_local: rsync -e  "ssh -F $$ssh_config_file" -az /tmp/_visit_dep/* $$g5k_user@$$kameleon_recipe_name:/tmp/_visit_dep/
+  - local2in:
+    - /tmp/visit$${version}.tar.gz
+    - /tmp/visit$${version}.tar.gz
+  - exec_local: rm -rf /tmp/visit$${version}.tar.gz /tmp/_visit_dep/ /tmp/build_visit$(echo $${version} | tr . _)
+
+- visit_install:
+  - exec_in: apt-get -y install  $$dep_packages
+  - exec_in: chown $$g5k_user -R /tmp/_visit_dep
+  - exec_in: su $${g5k_user}
+  - exec_in: cd /tmp
+  - exec_in: tar -zxf visit$${version}.tar.gz
+  - exec_in: mv _visit_dep/* visit$${version} 
+  - exec_in: cd visit$${version}
+  - exec_in: chmod +x build_visit$${build_version}
+  - exec_in: export LD_LIBRARY_PATH=$${install_prefix}/lib:$LD_LIBRARY_PATH
+  - exec_in: export PATH=$${install_prefix}/bin:$PATH
+  - exec_in: ./build_visit$${build_version} --server-components-only --system-cmake --mesa --prefix $${install_prefix}
+  - exec_in: exit
+

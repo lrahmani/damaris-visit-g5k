@@ -1,0 +1,23 @@
+- install_prefix: $HOME/local
+# cmake 2.8 or newer version needed
+- cmake_get: 
+  - exec_local: cd /tmp/
+  - exec_local: wget -q http://www.cmake.org/files/v3.0/cmake-3.0.1.tar.gz
+  - local2in:
+    - /tmp/cmake-3.0.1.tar.gz
+    - /tmp/cmake-3.0.1.tar.gz
+  - exec_local: rm /tmp/cmake-3.0.1.tar.gz
+
+- cmake_install: 
+  - exec_in: su $$g5k_user
+  - exec_in: cd /tmp/
+  - exec_in: tar -xzf cmake-3.0.1.tar.gz
+  - exec_in: cd /tmp/cmake-3.0.1
+  #- exec_in: export LD_LIBRARY_PATH=$${install_prefix}/lib:$LD_LIBRARY_PATH
+  #- exec_in: export PATH=$${install_prefix}/bin:$PATH
+  - exec_in: ./bootstrap --prefix=$$install_prefix
+  - exec_in: make 
+  - exec_in: make install
+  - exec_in: exit
+
+

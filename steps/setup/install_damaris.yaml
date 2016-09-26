@@ -1,0 +1,159 @@
+- git_repo: https://gforge.inria.fr/git/damaris/damaris.git
+- commit_id: f38540cb8ab1636ab0ab917e2f6ce0155dfca02e
+- install_prefix: $HOME/local
+
+# install dependencies
+
+# cmake 2.8 or newer version needed
+#- cmake_get: 
+#  - exec_local: cd /tmp/
+#  - exec_local: wget -q http://www.cmake.org/files/v3.0/cmake-3.0.1.tar.gz
+#  - local2in:
+#    - /tmp/cmake-3.0.1.tar.gz
+#    - /tmp/cmake-3.0.1.tar.gz
+#  - exec_local: rm /tmp/cmake-3.0.1.tar.gz
+#
+#- cmake_install: 
+#  - exec_in: su $$g5k_user
+#  - exec_in: cd /tmp/
+#  - exec_in: tar -xzf cmake-3.0.1.tar.gz
+#  - exec_in: cd /tmp/cmake-3.0.1
+#  - exec_in: export LD_LIBRARY_PATH=$${install_prefix}/lib:$LD_LIBRARY_PATH
+#  - exec_in: export PATH=$${install_prefix}/bin:$PATH
+#  - exec_in: ./bootstrap --prefix=$$install_prefix
+#  - exec_in: make 
+#  - exec_in: make install
+#  - exec_in: exit
+
+- xerces_get:
+  - exec_local: cd /tmp/
+  - exec_local: wget -q http://mir2.ovh.net/ftp.apache.org/dist//xerces/c/3/sources/xerces-c-3.1.1.tar.gz
+  - local2in: 
+    - /tmp/xerces-c-3.1.1.tar.gz
+    - /tmp/xerces-c-3.1.1.tar.gz
+  - exec_local: rm /tmp/xerces-c-3.1.1.tar.gz
+
+- xerces_install:
+  - exec_in: su $$g5k_user
+  - exec_in: cd /tmp/
+  - exec_in: tar -xzf xerces-c-3.1.1.tar.gz
+  - exec_in: cd xerces-c-3.1.1
+  - exec_in: ./configure --prefix=$$install_prefix --disable-threads --disable-network
+  - exec_in: make
+  - exec_in: make install
+  - exec_in: exit
+
+- xsd_get:
+  - exec_local: cd /tmp/
+  - exec_local: wget -q  http://www.codesynthesis.com/download/xsd/4.0/xsd-4.0.0+dep.tar.bz2
+  - local2in:
+    - /tmp/xsd-4.0.0+dep.tar.bz2
+    - /tmp/xsd-4.0.0+dep.tar.bz2
+  - exec_local: rm /tmp/xsd-4.0.0+dep.tar.bz2
+
+- xsd_install:
+  - exec_in: su $$g5k_user
+  - exec_in: cd /tmp/
+  - exec_in: tar xjf xsd-4.0.0+dep.tar.bz2
+  - exec_in: cd  xsd-4.0.0+dep
+  - exec_in: make LDFLAGS="-L$${install_prefix}/lib/" CFLAGS="-I $${install_prefix}/include" CXXFLAGS="-I $${install_prefix}/include/"
+  - exec_in: make install_prefix=$${install_prefix} install LDFLAGS="-L~/local/lib/" CFLAGS="-I ~/local/include" CXXFLAGS="-I ~/local/include/"
+  - exec_in: exit
+
+- boost_get:
+  - exec_local: cd /tmp/
+  # Don't use the direct link, 
+  #- exec_local: wget -q http://sourceforge.net/projects/boost/files/boost/1.56.0/boost_1_56_0.tar.gz
+  # to avoid the cookie accept page
+  - exec_local: wget -q http://downloads.sourceforge.net/project/boost/boost/1.56.0/boost_1_56_0.tar.gz?r=&ts=1412328135&use_mirror=cznic
+  - exec_local: mv boost_1_56_0.tar.gz\?r\=  boost_1_56_0.tar.gz
+  - local2in:
+    - /tmp/boost_1_56_0.tar.gz
+    - /tmp/boost_1_56_0.tar.gz
+  - exec_local: rm /tmp/boost_1_56_0.tar.gz
+
+- boost_install:
+  - exec_in: su $$g5k_user
+  - exec_in: cd /tmp/
+  - exec_in: tar -xzf boost_1_56_0.tar.gz
+  - exec_in: cd boost_1_56_0
+  - exec_in: ./bootstrap.sh --prefix=$$install_prefix --with-libraries=date_time,program_options,filesystem,system
+  - exec_in: ./b2
+  - exec_in: ./b2 install
+  - exec_in: exit
+
+- zlib_get:
+  - exec_local: cd /tmp/
+  - exec_local: wget -q http://zlib.net/zlib-1.2.8.tar.gz 
+  - local2in:
+    - /tmp/zlib-1.2.8.tar.gz
+    - /tmp/zlib-1.2.8.tar.gz
+  - exec_local: rm zlib-1.2.8.tar.gz
+
+- zlib_install:
+  - exec_in: su $$g5k_user
+  - exec_in: cd /tmp/
+  - exec_in: tar -xzf zlib-1.2.8.tar.gz
+  - exec_in: cd zlib-1.2.8
+  - exec_in: $${install_prefix}/bin/cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX:path=$$install_prefix
+  - exec_in: make 
+  - exec_in: make install
+  - exec_in: exit
+
+- cppunit_get:
+  - exec_local: cd /tmp/ 
+  # Don't use the direct link, 
+  #- exec_local: wget -q http://sourceforge.net/projects/cppunit/files/cppunit/1.12.1/cppunit-1.12.1.tar.gz 
+  # to avoid the cookie accept page
+  - exec_local: wget -q http://downloads.sourceforge.net/project/cppunit/cppunit/1.12.1/cppunit-1.12.1.tar.gz?r=&ts=1412329441&use_mirror=switch
+  - exec_local: mv cppunit-1.12.1.tar.gz\?r\= cppunit-1.12.1.tar.gz
+  - local2in:
+    - /tmp/cppunit-1.12.1.tar.gz
+    - /tmp/cppunit-1.12.1.tar.gz
+  - exec_local: rm /tmp/cppunit-1.12.1.tar.gz
+
+- cppunit_install:
+  - exec_in: su $$g5k_user
+  - exec_in: cd /tmp/
+  - exec_in: tar -xzf cppunit-1.12.1.tar.gz
+  - exec_in: cd cppunit-1.12.1
+  - exec_in: ./configure --prefix=$${install_prefix}
+  - exec_in: make 
+  - exec_in: make install
+  - exec_in: exit
+
+- damaris_get: 
+  - exec_local: cd /tmp/ 
+  - exec_local: git clone $$git_repo
+  - exec_local: cd damaris/
+  - exec_local: git checkout $$commit_id
+  - exec_local: cd ..
+  - exec_local: tar -zcf  damaris.tar.gz  damaris/ --exclude="*.git"
+  # choose between
+  #- exec_local: rsync -v -e "ssh -F ./ssh_co" -az /home/devdz/damaris  root@taurus-9:/tmp/ --exclude=.git 
+  - local2in:
+    - /tmp/damaris.tar.gz
+    - /tmp/damaris.tar.gz
+  - exec_local: rm -fr /tmp/damaris /tmp/damaris.tar.gz
+
+- damaris_install: 
+  - exec_in: su $$g5k_user
+  - exec_in: cd /tmp/
+  - exec_in: tar -zxf damaris.tar.gz
+  - exec_in: cd damaris/refactoring
+  # get the good CMakeList.txt file before calling cmake
+  - exec_in: sed -i '/EXTERNAL_ROOT/c\set(EXTERNAL_ROOT $${install_prefix})' CMakeLists.txt
+  - exec_in: sed -i '/VisIt_ROOT/c\set(VisIt_ROOT $${install_prefix})' CMakeLists.txt
+  - exec_in: export LD_LIBRARY_PATH=$${install_prefix}/lib:$LD_LIBRARY_PATH
+  - exec_in: export PATH=$${install_prefix}/bin/:$PATH
+  - exec_in: $${install_prefix}/bin/cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX:path=$$install_prefix
+  # needed for xsd to find libxerces-c-3.1.so
+  - exec_in: make 
+  - exec_in: make install
+  - exec_in: exit
+
+
+
+
+
+

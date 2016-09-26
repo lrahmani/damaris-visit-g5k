@@ -1,0 +1,25 @@
+- install_prefix: $HOME/local
+- package_name: $(basename $$src_url)
+- hdf5_get: 
+  - exec_local: cd /tmp/
+  - exec_local: wget -q $$src_url
+  - local2in:
+    - /tmp/$$package_name
+    - /tmp/$$package_name
+  - exec_local: rm /tmp/$$package_name
+
+- hdf5_install: 
+  - exec_in: su $$g5k_user
+  - exec_in: cd /tmp/
+  - exec_in: tar -xzf $$package_name
+  - exec_in: export package_name=$$package_name
+  # the file is supposed to be in a .tar.gz format
+  - exec_in: cd /tmp/$(echo ${package_name%.*.*}) 
+  #- exec_in: export LD_LIBRARY_PATH=$${install_prefix}/lib:$LD_LIBRARY_PATH
+  #- exec_in: export PATH=$${install_prefix}/bin:$PATH
+  #- exec_in: ./bootstrap --prefix=$$install_prefix
+  #- exec_in: make 
+  #- exec_in: make install
+  #- exec_in: exit
+to be continued ...
+
